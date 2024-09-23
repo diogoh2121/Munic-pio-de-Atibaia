@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal da Transparência - Gráficos de Despesas, Folha de Pagamento, Licitações e Receita Mensal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            margin: 50px auto;
+            text-align: center;
+        }
+        h1 {
+         text-align: center;
+         font-size: 2.5em;
+         margin-bottom: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .chart-box {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
+            width: 45%;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container"></div>
+        <h1>Dados Mensais do Município de Atibaia</h1>
+        
+        <!-- Resto do código permanece o mesmo -->
+    </div>
+    <div class="container">
+        <h2>Despesas Mensais</h2>
+        <div class="chart-container">
+            <div class="chart-box">
+                <canvas id="despesaBarChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="despesaPieChart"></canvas>
+            </div>
+        </div>
+
+        <h2>Folha de Pagamento</h2>
+        <div class="chart-container">
+            <div class="chart-box">
+                <canvas id="folhaBarChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="folhaPieChart"></canvas>
+            </div>
+        </div>
+
+        <h2>Licitações e Dispensas</h2>
+        <div class="chart-container">
+            <div class="chart-box">
+                <canvas id="licitacoesBarChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="licitacoesPieChart"></canvas>
+            </div>
+        </div>
+
+        <h2>Receita Mensal</h2>
+        <div class="chart-container">
+            <div class="chart-box">
+                <canvas id="receitaBarChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="receitaPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Atualizado em: 22/09/2024</p>
+    </footer>
+
+    <script>
+        // Gráficos de Despesas Mensais
+        const labelsDespesa = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'];
+        const empenhadoData = [86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21];
+        const liquidadoData = [125637624.67, 114694285.44, 93969757.26, 93951814.25, 102479528.08, 99568121.27, 91514802.57, 94636485.55, 86402848.21];
+        const pagoData = [366889639.81, 94531971.68, 62696941.03, 101764607.76, 62566587.91, 116305245.23, 50759469.18, 46194872.85, -1686.27];
+
+        const ctxDespesaBar = document.getElementById('despesaBarChart').getContext('2d');
+        const despesaBarChart = new Chart(ctxDespesaBar, {
+            type: 'bar',
+            data: {
+                labels: labelsDespesa,
+                datasets: [{
+                    label: 'Empenhado',
+                    data: empenhadoData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Liquidado',
+                    data: liquidadoData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Pago',
+                    data: pagoData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const totalEmpenhado = empenhadoData.reduce((acc, val) => acc + val, 0);
+        const totalLiquidado = liquidadoData.reduce((acc, val) => acc + val, 0);
+        const totalPago = pagoData.reduce((acc, val) => acc + val, 0);
+
+        const ctxDespesaPie = document.getElementById('despesaPieChart').getContext('2d');
+        const despesaPieChart = new Chart(ctxDespesaPie, {
+            type: 'pie',
+            data: {
+                labels: ['Empenhado', 'Liquidado', 'Pago'],
+                datasets: [{
+                    data: [totalEmpenhado, totalLiquidado, totalPago],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        // Gráficos de Folha de Pagamento
+        const labelsFolha = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'];
+        const folhaBrutaData = [18482596.80, 19755806.61, 20920137.47, 23174255.21, 22401409.99, 22718214.92, 23408095.27];
+
+        const ctxFolhaBar = document.getElementById('folhaBarChart').getContext('2d');
+        const folhaBarChart = new Chart(ctxFolhaBar, {
+            type: 'bar',
+            data: {
+                labels: labelsFolha,
+                datasets: [{
+                    label: 'Remuneração Bruta',
+                    data: folhaBrutaData,
+                    backgroundColor: 'rgba(255, 206, 86, 0.7)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const totalFolhaBruta = folhaBrutaData.reduce((acc, val) => acc + val, 0);
+
+        const ctxFolhaPie = document.getElementById('folhaPieChart').getContext('2d');
+        const folhaPieChart = new Chart(ctxFolhaPie, {
+            type: 'pie',
+            data: {
+                labels: ['Remuneração Bruta'],
+                datasets: [{
+                    data: [totalFolhaBruta],
+                    backgroundColor: [
+                        'rgba(255, 206, 86, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 206, 86, 1)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        // Gráficos de Licitações e Dispensas
+        const labelsLicitacoes = [
+            'LEAFAR SOLUCOES CONSTRUTIVAS LTDA', 'CLEBER FELIPE DE MENDONCA', 
+            'Juliana S            Sallas Ferreira', 'ORQUESTRA DE VIOLA', 'RAUL BROCHETA DE OLIVEIRA', 
+            'CEPAVI ENGENHARIA E CONSTRUTORA LTDA', 'DEKTON ENGENHARIA E CONSTRUCAO LTDA', 
+            'CONSTRUTORA CORDEIRO LTDA', 'Contatto Solucoes da Tecnologia LTDA', 
+            'CEPAVI ENGENHARIA E CONSTRUTORA LTDA', 'RIUSCITA GERENCIAMENTO E ADMINISTRACAO DE OBRAS CIVIS LTDA', 
+            'A. MARCOS L. DO PRADO', 'IRMAOS LUCHINI S A COMERCIAL AUTO PECAS', 
+            'CETESB COMPANHIA AMBIENTAL DO ESTADO DE SAO PAULO', 'CREMILDA PEREIRA GOMES'
+        ];
+
+        const valoresLicitacoes = [
+            48126.98, 3000.00, 3000.00, 7000.00, 3000.00, 
+            19927992.62, 5930000.00, 423950.00, 198000.00, 
+            8106900.00, 106200.00, 1264.00, 3750.00, 
+            14070.00
+        ];
+
+        const ctxLicitacoesBar = document.getElementById('licitacoesBarChart').getContext('2d');
+        const licitacoesBarChart = new Chart(ctxLicitacoesBar, {
+            type: 'bar',
+            data: {
+                labels: labelsLicitacoes,
+                datasets: [{
+                    label: 'Valor de Licitações',
+                    data: valoresLicitacoes,
+                    backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const ctxLicitacoesPie = document.getElementById('licitacoesPieChart').getContext('2d');
+        const licitacoesPieChart = new Chart(ctxLicitacoesPie, {
+            type: 'pie',
+            data: {
+                labels: labelsLicitacoes,
+                datasets: [{
+                    data: valoresLicitacoes,
+                    backgroundColor: [
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(255, 205, 86, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 205, 86, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        // Gráficos de Receita Mensal
+        const labelsReceita = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'];
+        const valorReceitaData = [
+            97139850.00, 87691093.00, 137605422.00, 78901414.00, 86551277.00, 
+            76017267.00, 80650302.00, 76855790.00, 81156342.00
+        ];
+
+        const ctxReceitaBar = document.getElementById('receitaBarChart').getContext('2d');
+        const receitaBarChart = new Chart(ctxReceitaBar, {
+            type: 'bar',
+            data: {
+                labels: labelsReceita,
+                datasets: [{
+                    label: 'Valor da Receita Mensal',
+                    data: valorReceitaData,
+                    backgroundColor: 'rgba(99, 255, 132, 0.7)',
+                    borderColor: 'rgba(99, 255, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const totalReceita = valorReceitaData.reduce((acc, val) => acc + val, 0);
+
+        const ctxReceitaPie = document.getElementById('receitaPieChart').getContext('2d');
+        const receitaPieChart = new Chart(ctxReceitaPie, {
+            type: 'pie',
+            data: {
+                labels: labelsReceita,
+                datasets: [{
+                    data: valorReceitaData,
+                    backgroundColor: [
+                        'rgba(99, 255, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(255, 205, 86, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(99, 255, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 205, 86, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    </script>
+</body>
+</html>
+
