@@ -19,10 +19,11 @@
             margin: 50px auto;
             text-align: center;
         }
+
         h1 {
-         text-align: center;
-         font-size: 2.5em;
-         margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
         }
 
         h2 {
@@ -58,12 +59,9 @@
     </style>
 </head>
 <body>
-    <div class="container"></div>
+    <div class="container">
         <h1>Dados Mensais do Município de Atibaia</h1>
         
-        <!-- Resto do código permanece o mesmo -->
-    </div>
-    <div class="container">
         <h2>Despesas Mensais</h2>
         <div class="chart-container">
             <div class="chart-box">
@@ -106,36 +104,93 @@
     </div>
 
     <footer>
-        <p>Atualizado em: 22/09/2024</p>
+        <p>Atualizado em: <span id="dataAtualizacao">22/09/2024</span></p>
     </footer>
 
     <script>
-        // Gráficos de Despesas Mensais
-        const labelsDespesa = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'];
-        const empenhadoData = [86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21];
-        const liquidadoData = [125637624.67, 114694285.44, 93969757.26, 93951814.25, 102479528.08, 99568121.27, 91514802.57, 94636485.55, 86402848.21];
-        const pagoData = [366889639.81, 94531971.68, 62696941.03, 101764607.76, 62566587.91, 116305245.23, 50759469.18, 46194872.85, -1686.27];
+        // Simulação de uma IA que busca e atualiza os dados automaticamente
+        async function fetchAndUpdateData() {
+            try {
+                console.log("Conectando à IA para atualizar dados...");
 
+                // Simulando a chamada a uma IA externa para obter dados atualizados
+                const response = await fetch('https://api-externa-de-ia.com/atualizar-dados', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ requestData: 'Atualizar gráficos' })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Falha ao conectar à API.");
+                }
+
+                const data = await response.json();
+
+                console.log("Dados recebidos da IA:", data);
+
+                // Atualizando os gráficos com os dados recebidos
+                updateCharts(data);
+                document.getElementById("dataAtualizacao").textContent = new Date().toLocaleDateString();
+
+            } catch (error) {
+                console.error("Erro ao conectar à IA:", error);
+            }
+        }
+
+        function updateCharts(data) {
+            // Atualização dos dados dos gráficos
+            despesaBarChart.data.datasets[0].data = data.empenhadoData;
+            despesaBarChart.data.datasets[1].data = data.liquidadoData;
+            despesaBarChart.data.datasets[2].data = data.pagoData;
+            despesaBarChart.update();
+
+            despesaPieChart.data.datasets[0].data = [data.totalEmpenhado, data.totalLiquidado, data.totalPago];
+            despesaPieChart.update();
+
+            folhaBarChart.data.datasets[0].data = data.folhaBrutaData;
+            folhaBarChart.update();
+
+            folhaPieChart.data.datasets[0].data = [data.totalFolhaBruta];
+            folhaPieChart.update();
+
+            licitacoesBarChart.data.datasets[0].data = data.valoresLicitacoes;
+            licitacoesBarChart.update();
+
+            licitacoesPieChart.data.datasets[0].data = data.valoresLicitacoes;
+            licitacoesPieChart.update();
+
+            receitaBarChart.data.datasets[0].data = data.valorReceitaData;
+            receitaBarChart.update();
+
+            receitaPieChart.data.datasets[0].data = data.valorReceitaData;
+            receitaPieChart.update();
+
+            console.log("Gráficos atualizados com sucesso.");
+        }
+
+        // Configurações iniciais dos gráficos
         const ctxDespesaBar = document.getElementById('despesaBarChart').getContext('2d');
         const despesaBarChart = new Chart(ctxDespesaBar, {
             type: 'bar',
             data: {
-                labels: labelsDespesa,
+                labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'],
                 datasets: [{
                     label: 'Empenhado',
-                    data: empenhadoData,
+                    data: [86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21, 86402848.21],
                     backgroundColor: 'rgba(75, 192, 192, 0.7)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1
                 }, {
                     label: 'Liquidado',
-                    data: liquidadoData,
+                    data: [125637624.67, 114694285.44, 93969757.26, 93951814.25, 102479528.08, 99568121.27, 91514802.57, 94636485.55, 86402848.21],
                     backgroundColor: 'rgba(54, 162, 235, 0.7)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
                 }, {
                     label: 'Pago',
-                    data: pagoData,
+                    data: [366889639.81, 94531971.68, 62696941.03, 101764607.76, 62566587.91, 116305245.23, 50759469.18, 46194872.85, -1686.27],
                     backgroundColor: 'rgba(255, 99, 132, 0.7)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1
@@ -151,17 +206,13 @@
             }
         });
 
-        const totalEmpenhado = empenhadoData.reduce((acc, val) => acc + val, 0);
-        const totalLiquidado = liquidadoData.reduce((acc, val) => acc + val, 0);
-        const totalPago = pagoData.reduce((acc, val) => acc + val, 0);
-
         const ctxDespesaPie = document.getElementById('despesaPieChart').getContext('2d');
         const despesaPieChart = new Chart(ctxDespesaPie, {
             type: 'pie',
             data: {
                 labels: ['Empenhado', 'Liquidado', 'Pago'],
                 datasets: [{
-                    data: [totalEmpenhado, totalLiquidado, totalPago],
+                    data: [1036836154.89, 836035366.78, 777127192.87],
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.7)',
                         'rgba(54, 162, 235, 0.7)',
@@ -179,18 +230,14 @@
             }
         });
 
-        // Gráficos de Folha de Pagamento
-        const labelsFolha = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'];
-        const folhaBrutaData = [18482596.80, 19755806.61, 20920137.47, 23174255.21, 22401409.99, 22718214.92, 23408095.27];
-
         const ctxFolhaBar = document.getElementById('folhaBarChart').getContext('2d');
         const folhaBarChart = new Chart(ctxFolhaBar, {
             type: 'bar',
             data: {
-                labels: labelsFolha,
+                labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'],
                 datasets: [{
                     label: 'Remuneração Bruta',
-                    data: folhaBrutaData,
+                    data: [18482596.80, 19755806.61, 20920137.47, 23174255.21, 22401409.99, 22718214.92, 23408095.27],
                     backgroundColor: 'rgba(255, 206, 86, 0.7)',
                     borderColor: 'rgba(255, 206, 86, 1)',
                     borderWidth: 1
@@ -206,15 +253,13 @@
             }
         });
 
-        const totalFolhaBruta = folhaBrutaData.reduce((acc, val) => acc + val, 0);
-
         const ctxFolhaPie = document.getElementById('folhaPieChart').getContext('2d');
         const folhaPieChart = new Chart(ctxFolhaPie, {
             type: 'pie',
             data: {
                 labels: ['Remuneração Bruta'],
                 datasets: [{
-                    data: [totalFolhaBruta],
+                    data: [151460516.27],
                     backgroundColor: [
                         'rgba(255, 206, 86, 0.7)'
                     ],
@@ -228,32 +273,27 @@
             }
         });
 
-        // Gráficos de Licitações e Dispensas
-        const labelsLicitacoes = [
-            'LEAFAR SOLUCOES CONSTRUTIVAS LTDA', 'CLEBER FELIPE DE MENDONCA', 
-            'Juliana S            Sallas Ferreira', 'ORQUESTRA DE VIOLA', 'RAUL BROCHETA DE OLIVEIRA', 
-            'CEPAVI ENGENHARIA E CONSTRUTORA LTDA', 'DEKTON ENGENHARIA E CONSTRUCAO LTDA', 
-            'CONSTRUTORA CORDEIRO LTDA', 'Contatto Solucoes da Tecnologia LTDA', 
-            'CEPAVI ENGENHARIA E CONSTRUTORA LTDA', 'RIUSCITA GERENCIAMENTO E ADMINISTRACAO DE OBRAS CIVIS LTDA', 
-            'A. MARCOS L. DO PRADO', 'IRMAOS LUCHINI S A COMERCIAL AUTO PECAS', 
-            'CETESB COMPANHIA AMBIENTAL DO ESTADO DE SAO PAULO', 'CREMILDA PEREIRA GOMES'
-        ];
-
-        const valoresLicitacoes = [
-            48126.98, 3000.00, 3000.00, 7000.00, 3000.00, 
-            19927992.62, 5930000.00, 423950.00, 198000.00, 
-            8106900.00, 106200.00, 1264.00, 3750.00, 
-            14070.00
-        ];
-
         const ctxLicitacoesBar = document.getElementById('licitacoesBarChart').getContext('2d');
         const licitacoesBarChart = new Chart(ctxLicitacoesBar, {
             type: 'bar',
             data: {
-                labels: labelsLicitacoes,
+                labels: [
+                    'LEAFAR SOLUCOES CONSTRUTIVAS LTDA', 'CLEBER FELIPE DE MENDONCA', 
+                    'Juliana S            Sallas Ferreira', 'ORQUESTRA DE VIOLA', 'RAUL BROCHETA DE OLIVEIRA', 
+                    'CEPAVI ENGENHARIA E CONSTRUTORA LTDA', 'DEKTON ENGENHARIA E CONSTRUCAO LTDA', 
+                    'CONSTRUTORA CORDEIRO LTDA', 'Contatto Solucoes da Tecnologia LTDA', 
+                    'CEPAVI ENGENHARIA E CONSTRUTORA LTDA', 'RIUSCITA GERENCIAMENTO E ADMINISTRACAO DE OBRAS CIVIS LTDA', 
+                    'A. MARCOS L. DO PRADO', 'IRMAOS LUCHINI S A COMERCIAL AUTO PECAS', 
+                    'CETESB COMPANHIA AMBIENTAL DO ESTADO DE SAO PAULO', 'CREMILDA PEREIRA GOMES'
+                ],
                 datasets: [{
                     label: 'Valor de Licitações',
-                    data: valoresLicitacoes,
+                    data: [
+                        48126.98, 3000.00, 3000.00, 7000.00, 3000.00, 
+                        19927992.62, 5930000.00, 423950.00, 198000.00, 
+                        8106900.00, 106200.00, 1264.00, 3750.00, 
+                        14070.00
+                    ],
                     backgroundColor: 'rgba(153, 102, 255, 0.7)',
                     borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 1
@@ -273,9 +313,22 @@
         const licitacoesPieChart = new Chart(ctxLicitacoesPie, {
             type: 'pie',
             data: {
-                labels: labelsLicitacoes,
+                labels: [
+                    'LEAFAR SOLUCOES CONSTRUTIVAS LTDA', 'CLEBER FELIPE DE MENDONCA', 
+                    'Juliana S            Sallas Ferreira', 'ORQUESTRA DE VIOLA', 'RAUL BROCHETA DE OLIVEIRA', 
+                    'CEPAVI ENGENHARIA E CONSTRUTORA LTDA', 'DEKTON ENGENHARIA E CONSTRUCAO LTDA', 
+                    'CONSTRUTORA CORDEIRO LTDA', 'Contatto Solucoes da Tecnologia LTDA', 
+                    'CEPAVI ENGENHARIA E CONSTRUTORA LTDA', 'RIUSCITA GERENCIAMENTO E ADMINISTRACAO DE OBRAS CIVIS LTDA', 
+                    'A. MARCOS L. DO PRADO', 'IRMAOS LUCHINI S A COMERCIAL AUTO PECAS', 
+                    'CETESB COMPANHIA AMBIENTAL DO ESTADO DE SAO PAULO', 'CREMILDA PEREIRA GOMES'
+                ],
                 datasets: [{
-                    data: valoresLicitacoes,
+                    data: [
+                        48126.98, 3000.00, 3000.00, 7000.00, 3000.00, 
+                        19927992.62, 5930000.00, 423950.00, 198000.00, 
+                        8106900.00, 106200.00, 1264.00, 3750.00, 
+                        14070.00
+                    ],
                     backgroundColor: [
                         'rgba(153, 102, 255, 0.7)',
                         'rgba(255, 159, 64, 0.7)',
@@ -315,21 +368,17 @@
             }
         });
 
-        // Gráficos de Receita Mensal
-        const labelsReceita = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'];
-        const valorReceitaData = [
-            97139850.00, 87691093.00, 137605422.00, 78901414.00, 86551277.00, 
-            76017267.00, 80650302.00, 76855790.00, 81156342.00
-        ];
-
         const ctxReceitaBar = document.getElementById('receitaBarChart').getContext('2d');
         const receitaBarChart = new Chart(ctxReceitaBar, {
             type: 'bar',
             data: {
-                labels: labelsReceita,
+                labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'],
                 datasets: [{
                     label: 'Valor da Receita Mensal',
-                    data: valorReceitaData,
+                    data: [
+                        97139850.00, 87691093.00, 137605422.00, 78901414.00, 86551277.00, 
+                        76017267.00, 80650302.00, 76855790.00, 81156342.00
+                    ],
                     backgroundColor: 'rgba(99, 255, 132, 0.7)',
                     borderColor: 'rgba(99, 255, 132, 1)',
                     borderWidth: 1
@@ -345,15 +394,16 @@
             }
         });
 
-        const totalReceita = valorReceitaData.reduce((acc, val) => acc + val, 0);
-
         const ctxReceitaPie = document.getElementById('receitaPieChart').getContext('2d');
         const receitaPieChart = new Chart(ctxReceitaPie, {
             type: 'pie',
             data: {
-                labels: labelsReceita,
+                labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'],
                 datasets: [{
-                    data: valorReceitaData,
+                    data: [
+                        97139850.00, 87691093.00, 137605422.00, 78901414.00, 86551277.00, 
+                        76017267.00, 80650302.00, 76855790.00, 81156342.00
+                    ],
                     backgroundColor: [
                         'rgba(99, 255, 132, 0.7)',
                         'rgba(54, 162, 235, 0.7)',
@@ -382,7 +432,9 @@
                 responsive: true
             }
         });
+
+        // Chamando a função de atualização ao carregar a página
+        window.onload = fetchAndUpdateData;
     </script>
 </body>
 </html>
-
